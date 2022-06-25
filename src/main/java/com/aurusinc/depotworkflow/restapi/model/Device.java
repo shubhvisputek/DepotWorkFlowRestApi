@@ -19,8 +19,6 @@ public class Device {
 
 	@Id
     @Column(name = "SerialNumber", nullable = false, unique=true)
-	@Getter
-	@Setter
 	private String serialNumber;
 
     @Column(name = "FullSerialNumber", nullable = false)

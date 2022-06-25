@@ -1,7 +1,7 @@
 package com.aurusinc.depotworkflow.restapi.controller;
 
 import com.aurusinc.depotworkflow.restapi.model.Image;
-import com.aurusinc.depotworkflow.restapi.repository.ImageRepository;
+import com.aurusinc.depotworkflow.restapi.service.ImageService;
 import com.aurusinc.depotworkflow.restapi.util.ImageUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,44 +14,79 @@ import java.io.IOException;
 import java.util.Optional;
 
 @RestController
-//@CrossOrigin(origins = "http://localhost:8082") open for specific port
+// @CrossOrigin(origins = "http://localhost:8082") open for specific port
 @CrossOrigin() // open for all ports
 public class ImageController {
 
-    @Autowired
-    ImageRepository imageRepository;
+        private ImageService imageService;
 
-    @PostMapping("/upload/image")
-    public ResponseEntity<ImageUploadResponse> uplaodImage(@RequestParam("image") MultipartFile file)
-            throws IOException {
+        public ImageController(ImageService imageService) {
+                super();
+                this.imageService = imageService;
+        }
 
-        imageRepository.save(Image.builder().name(file.getOriginalFilename())
-                .type(file.getContentType())
-                .image(ImageUtility.compressImage(file.getBytes())).build());
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ImageUploadResponse("Image uploaded successfully: " +
-                        file.getOriginalFilename()));
-    }
+        @PostMapping("/upload/image")
+        public ResponseEntity uplaodImage(
+                        @RequestParam("deviceImage") MultipartFile deviceImageFile,
+                        @RequestParam("deviceBoxImage") MultipartFile deviceBoxImageFile,
+                        @RequestParam("deviceAccessoriesImage") MultipartFile deviceAccessoriesImageFile,
+                        @RequestParam("shipmentLabel") String shipmentLabel, 
+                        @RequestParam("ticketID") String ticketID)
+                        throws IOException {
 
-    @GetMapping(path = {"/get/image/info/{name}"})
-    public Image getImageDetails(@PathVariable("name") String name) throws IOException {
+                Image image = new Image();
 
-        final Optional<Image> dbImage = imageRepository.findByName(name);
+                image.setTicketID(ticketID);
+                image.setShipmentLabel(shipmentLabel);
 
-        return Image.builder()
-                .name(dbImage.get().getName())
-                .type(dbImage.get().getType())
-                .image(ImageUtility.decompressImage(dbImage.get().getImage())).build();
-    }
+                image.setDeviceImageName(deviceImageFile.getOriginalFilename());
+                image.setDeviceImageType(deviceImageFile.getContentType());
+                image.setDeviceImage(deviceImageFile.getBytes());
 
-    @GetMapping(path = {"/get/image/{name}"})
-    public ResponseEntity<byte[]> getImage(@PathVariable("name") String name) throws IOException {
+                image.setDeviceBoxImageName(deviceBoxImageFile.getOriginalFilename());
+                image.setDeviceBoxImageType(deviceBoxImageFile.getContentType());
+                image.setDeviceBoxImage(deviceBoxImageFile.getBytes());
 
-        final Optional<Image> dbImage = imageRepository.findByName(name);
+                image.setDeviceAccessoriesImageName(deviceAccessoriesImageFile.getOriginalFilename());
+                image.setDeviceAccessoriesImageType(deviceAccessoriesImageFile.getContentType());
+                image.setDeviceAccessoriesImage(deviceAccessoriesImageFile.getBytes());
 
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.valueOf(dbImage.get().getType()))
-                .body(ImageUtility.decompressImage(dbImage.get().getImage()));
-    }
+                imageService.saveImage(image);
+
+                return new ResponseEntity<ImageUploadResponse>(new ImageUploadResponse("Image uploaded successfully", image.getTicketID(), image.getShipmentLabel(), image.getDeviceImageName(), image.getDeviceBoxImageName(), image.getDeviceAccessoriesImageName()), HttpStatus.OK);
+        }
+
+        @GetMapping(path = {"get/image/{id}" })
+        public ResponseEntity<Image> getImageDetails(@PathVariable("id") String ticketID) throws IOException {
+
+                Image dbImage = imageService.getImageById(ticketID);
+
+                return new ResponseEntity<Image>(dbImage, HttpStatus.OK);
+        }
+
+        @GetMapping(path = { "get/image/{id}/{name}" })
+        public ResponseEntity getImage(@PathVariable("id") String ticketID, @PathVariable("name") String imageName) throws IOException {
+
+                Image dbImage = imageService.getImageById(ticketID);
+
+                if(imageName.equals(dbImage.getDeviceImageName())){
+                        return ResponseEntity
+                                .ok()
+                                .contentType(MediaType.valueOf(dbImage.getDeviceImageType()))
+                                .body(dbImage.getDeviceImage());
+                }
+                else if(imageName.equals(dbImage.getDeviceBoxImageName())){
+                        return ResponseEntity
+                        .ok()
+                        .contentType(MediaType.valueOf(dbImage.getDeviceBoxImageType()))
+                        .body(dbImage.getDeviceBoxImage());
+                } 
+                else if(imageName.equals(dbImage.getDeviceAccessoriesImageName())){
+                        return ResponseEntity
+                        .ok()
+                        .contentType(MediaType.valueOf(dbImage.getDeviceAccessoriesImageType()))
+                        .body(dbImage.getDeviceAccessoriesImage());
+                }
+                return new ResponseEntity<String>("Image Not Found", HttpStatus.NOT_FOUND);
+        }
 }
