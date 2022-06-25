@@ -8,7 +8,7 @@ public interface DeviceService {
 	Device saveDevice(Device device);
 	List<Device> getAllDevices();
 	Device getDeviceById(String id);
-	Device getDeviceByObject(Device device);
+	List<Device> getDeviceByObject(Device device);
 	Device updateDevice(Device device, String id);
 	void deleteDevice(String id);
 }

@@ -38,9 +38,8 @@ public class DeviceServiceImpl implements DeviceService{
 	}
 
 	@Override
-	public Device getDeviceByObject(Device device) {
-		return deviceRepository.findOne(Example.of(device)).orElseThrow(
-			() -> new ResourceNotFoundException("Ticket")); 
+	public List<Device> getDeviceByObject(Device device) {
+		return deviceRepository.findAll(Example.of(device)); 
 	}
 
 	@Override

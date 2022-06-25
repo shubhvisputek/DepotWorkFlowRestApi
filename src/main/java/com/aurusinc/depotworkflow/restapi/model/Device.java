@@ -1,6 +1,8 @@
 package com.aurusinc.depotworkflow.restapi.model;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -9,8 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 @Data
 @Entity
@@ -64,8 +64,7 @@ public class Device {
 	private String zipCode;
 
     @Column(name = "DummyTID")
-    @ElementCollection(targetClass=String.class)   
-	private List<String> dummyTID;
+	private String dummyTID;
 
     @Column(name = "DeviceStatus")
 	private String deviceStatus;

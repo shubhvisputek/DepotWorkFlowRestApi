@@ -9,12 +9,9 @@ import javax.persistence.*;
 
 import com.aurusinc.depotworkflow.restapi.util.ImageUtility;
 
+@Data
 @Entity
 @Table(name = "images")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class Image {
 
 	@Id
@@ -30,7 +27,7 @@ public class Image {
 	@Column(name = "deviceImageType")
 	private String deviceImageType;
 
-	@Column(name = "deviceImage")
+	@Column(name = "deviceImage", length = 10000000)
 	private byte[] deviceImage;
 
 	@Column(name = "deviceBoxImageName")
@@ -39,7 +36,7 @@ public class Image {
 	@Column(name = "deviceBoxImageType")
 	private String deviceBoxImageType;
 
-	@Column(name = "deviceBoxImage")
+	@Column(name = "deviceBoxImage", length = 10000000)
 	private byte[] deviceBoxImage;
 
 	@Column(name = "deviceAccessoriesImageName")
@@ -48,7 +45,7 @@ public class Image {
 	@Column(name = "deviceAccessoriesImageType")
 	private String deviceAccessoriesImageType;
 
-	@Column(name = "deviceAccessoriesImage")
+	@Column(name = "deviceAccessoriesImage", length = 10000000)
 	private byte[] deviceAccessoriesImage;
 
 	public byte[] getDeviceImage() {

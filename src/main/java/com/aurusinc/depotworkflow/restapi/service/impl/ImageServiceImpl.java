@@ -2,7 +2,6 @@ package com.aurusinc.depotworkflow.restapi.service.impl;
 
 import java.util.List;
 
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
 import com.aurusinc.depotworkflow.restapi.exception.ResourceNotFoundException;

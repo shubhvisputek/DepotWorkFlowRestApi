@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aurusinc.depotworkflow.restapi.exception.ResourceNotFoundException;
+import com.aurusinc.depotworkflow.restapi.model.Device;
 import com.aurusinc.depotworkflow.restapi.model.Ticket;
 import com.aurusinc.depotworkflow.restapi.service.TicketService;
+import com.aurusinc.depotworkflow.restapi.util.DeviceUtility;
 
 @RestController
 @RequestMapping("/api/tickets")
@@ -37,7 +39,16 @@ public class TicketController {
 	
 	// build create ticket REST API
 	@PostMapping
-	public ResponseEntity<Ticket> saveTicket(@RequestBody Ticket ticket) throws ResourceNotFoundException {
+	public ResponseEntity<Ticket> saveTicket(@RequestBody Ticket ticket) throws ResourceNotFoundException{
+
+		if(ticket.getDevices() != null){
+			for (int i=0; i<ticket.getDevices().size(); i++) {
+				Device device = ticket.getDevices().get(i);
+				if(device.getDummyTID() == null || device.getDummyTID().isEmpty()){
+					device.setDummyTID(DeviceUtility.getDeviceUtility().getDummyTID());
+				}
+			}
+		}
 		return new ResponseEntity<Ticket>(ticketService.saveTicket(ticket), HttpStatus.OK);
 	}
 

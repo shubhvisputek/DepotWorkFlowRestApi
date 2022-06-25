@@ -2,8 +2,6 @@ package com.aurusinc.depotworkflow.restapi.controller;
 
 import com.aurusinc.depotworkflow.restapi.model.Image;
 import com.aurusinc.depotworkflow.restapi.service.ImageService;
-import com.aurusinc.depotworkflow.restapi.util.ImageUtility;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,11 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @RestController
 // @CrossOrigin(origins = "http://localhost:8082") open for specific port
-@CrossOrigin() // open for all ports
+// @CrossOrigin() // open for all ports
 public class ImageController {
 
         private ImageService imageService;
@@ -27,29 +24,28 @@ public class ImageController {
 
         @PostMapping("/upload/image")
         public ResponseEntity uplaodImage(
-                        @RequestParam("deviceImage") MultipartFile deviceImageFile,
-                        @RequestParam("deviceBoxImage") MultipartFile deviceBoxImageFile,
-                        @RequestParam("deviceAccessoriesImage") MultipartFile deviceAccessoriesImageFile,
+                        @RequestParam(name = "deviceImage", required = false) MultipartFile deviceImageFile,
+                        @RequestParam(name = "deviceBoxImage", required = false) MultipartFile deviceBoxImageFile,
+                        @RequestParam(name = "deviceAccessoriesImage", required = false) MultipartFile deviceAccessoriesImageFile,
                         @RequestParam("shipmentLabel") String shipmentLabel, 
-                        @RequestParam("ticketID") String ticketID)
-                        throws IOException {
+                        @RequestParam("ticketID") String ticketID) throws IOException {
 
                 Image image = new Image();
 
                 image.setTicketID(ticketID);
                 image.setShipmentLabel(shipmentLabel);
 
-                image.setDeviceImageName(deviceImageFile.getOriginalFilename());
-                image.setDeviceImageType(deviceImageFile.getContentType());
-                image.setDeviceImage(deviceImageFile.getBytes());
+                if(deviceImageFile != null) image.setDeviceImageName(deviceImageFile.getOriginalFilename());
+                if(deviceImageFile != null) image.setDeviceImageType(deviceImageFile.getContentType());
+                if(deviceImageFile != null) image.setDeviceImage(deviceImageFile.getBytes());
 
-                image.setDeviceBoxImageName(deviceBoxImageFile.getOriginalFilename());
-                image.setDeviceBoxImageType(deviceBoxImageFile.getContentType());
-                image.setDeviceBoxImage(deviceBoxImageFile.getBytes());
+                if(deviceBoxImageFile != null) image.setDeviceBoxImageName(deviceBoxImageFile.getOriginalFilename());
+                if(deviceBoxImageFile != null) image.setDeviceBoxImageType(deviceBoxImageFile.getContentType());
+                if(deviceBoxImageFile != null) image.setDeviceBoxImage(deviceBoxImageFile.getBytes());
 
-                image.setDeviceAccessoriesImageName(deviceAccessoriesImageFile.getOriginalFilename());
-                image.setDeviceAccessoriesImageType(deviceAccessoriesImageFile.getContentType());
-                image.setDeviceAccessoriesImage(deviceAccessoriesImageFile.getBytes());
+                if(deviceAccessoriesImageFile != null) image.setDeviceAccessoriesImageName(deviceAccessoriesImageFile.getOriginalFilename());
+                if(deviceAccessoriesImageFile != null) image.setDeviceAccessoriesImageType(deviceAccessoriesImageFile.getContentType());
+                if(deviceAccessoriesImageFile != null) image.setDeviceAccessoriesImage(deviceAccessoriesImageFile.getBytes());
 
                 imageService.saveImage(image);
 
