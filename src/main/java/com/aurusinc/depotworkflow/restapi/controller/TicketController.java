@@ -85,10 +85,17 @@ public class TicketController {
 	// build update ticket REST API
 	// http://localhost:8080/api/tickets/1
 	@PutMapping("{id}")
-	public ResponseEntity<Ticket> updateTicket(@PathVariable("id") String id
-												  ,@RequestBody Ticket ticket) throws ResourceNotFoundException{
-		
-		logger.trace("A TRACE Message");										;
+	public ResponseEntity<Ticket> updateTicket(@PathVariable("id") String id ,@RequestBody Ticket ticket) throws ResourceNotFoundException{
+
+		if(ticket.getDevices() != null){
+			for (int i=0; i<ticket.getDevices().size(); i++) {
+				Device device = ticket.getDevices().get(i);
+				if(device.getDummyTID() == null || device.getDummyTID().isEmpty()){
+					device.setDummyTID(DeviceUtility.getDeviceUtility().getDummyTID());
+				}
+			}
+		}
+
 		return new ResponseEntity<Ticket>(ticketService.updateTicket(ticket, id), HttpStatus.OK);
 	}
 	

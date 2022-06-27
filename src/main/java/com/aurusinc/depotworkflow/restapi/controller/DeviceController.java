@@ -69,8 +69,11 @@ public class DeviceController {
 	// build update device REST API
 	// http://localhost:8080/api/devices/1
 	@PutMapping("{id}")
-	public ResponseEntity<Device> updateDevice(@PathVariable("id") String id
-												  ,@RequestBody Device device) throws ResourceNotFoundException{
+	public ResponseEntity<Device> updateDevice(@PathVariable("id") String id ,@RequestBody Device device) throws ResourceNotFoundException{
+		
+		if(device.getDummyTID() == null || device.getDummyTID().isEmpty()){
+			device.setDummyTID(DeviceUtility.getDeviceUtility().getDummyTID());
+		}
 		return new ResponseEntity<Device>(deviceService.updateDevice(device, id), HttpStatus.OK);
 	}
 	
@@ -84,5 +87,4 @@ public class DeviceController {
 		
 		return new ResponseEntity<String>("Device deleted successfully!.", HttpStatus.OK);
 	}
-	
 }
